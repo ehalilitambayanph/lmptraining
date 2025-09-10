@@ -131,6 +131,14 @@ export default function SalesTrainingViewer() {
                   Sales Training
                 </Button>
                 <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open('https://chat.whatsapp.com/KOiszYwZudR519lSjcXQS9', '_blank')}
+                  className="text-sm bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700"
+                >
+                  Join us on WhatsApp
+                </Button>
+                <Button
                   variant="ghost"
                   onClick={() => window.location.href = '/training-activity'}
                   className="text-sm"
