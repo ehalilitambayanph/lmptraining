@@ -141,11 +141,10 @@ export default function SalesTrainingViewer() {
   };
 
   const generateShareLink = () => {
-    const baseUrl = window.location.origin + window.location.pathname + '?mode=trainee';
     const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(products));
-    const shareUrl = `${baseUrl}#data=${compressed}`;
+    const shareUrl = `${window.location.origin}/?mode=trainee#data=${compressed}`;
     copyToClipboard(shareUrl);
-    toast.success('View-only link copied to clipboard!');
+    toast.success('View-only link copied to clipboard! Note: App must be published for trainees to access without login.');
   };
 
   const getCustomerProfiles = (profilesText: string) => {
