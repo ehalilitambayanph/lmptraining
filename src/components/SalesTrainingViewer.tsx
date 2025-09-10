@@ -1,0 +1,411 @@
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Search, Upload, Copy, ExternalLink, FileSpreadsheet, CheckCircle } from 'lucide-react';
+import * as XLSX from 'xlsx';
+
+interface ProductData {
+  'Product URL': string;
+  'Product Name': string;
+  'Definition (Simple)': string;
+  'Expanded Explanation': string;
+  'Common Uses': string;
+  'Common Customer Profiles': string;
+  'Positioning (vs Competitors)': string;
+  'Cold Call Script': string;
+  'Cold Email - Sequence 1': string;
+  'Cold Email - Sequence 2': string;
+  'Cold Email - Sequence 3': string;
+  'Cold Email - Sequence 4': string;
+  'Cold Email - Sequence 5': string;
+  'Possible Customer Objections': string;
+  'Rebuttals to Objections': string;
+}
+
+export default function SalesTrainingViewer() {
+  const [products, setProducts] = useState<ProductData[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState('products');
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploaded' | 'error'>('idle');
+
+  // Load data from localStorage on mount
+  useEffect(() => {
+    const savedProducts = localStorage.getItem('salesTrainingProducts');
+    const savedSelectedId = localStorage.getItem('selectedProductId');
+    
+    if (savedProducts) {
+      const parsedProducts = JSON.parse(savedProducts);
+      setProducts(parsedProducts);
+      setUploadStatus('uploaded');
+      
+      if (savedSelectedId && parsedProducts.length > 0) {
+        const product = parsedProducts.find((p: ProductData) => p['Product Name'] === savedSelectedId);
+        if (product) {
+          setSelectedProduct(product);
+        } else {
+          setSelectedProduct(parsedProducts[0]);
+        }
+      }
+    }
+  }, []);
+
+  // Save selected product to localStorage
+  useEffect(() => {
+    if (selectedProduct) {
+      localStorage.setItem('selectedProductId', selectedProduct['Product Name']);
+    }
+  }, [selectedProduct]);
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet) as ProductData[];
+        
+        setProducts(jsonData);
+        localStorage.setItem('salesTrainingProducts', JSON.stringify(jsonData));
+        setUploadStatus('uploaded');
+        
+        if (jsonData.length > 0) {
+          setSelectedProduct(jsonData[0]);
+        }
+      } catch (error) {
+        console.error('Error parsing file:', error);
+        setUploadStatus('error');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
+  const filteredProducts = products.filter(product =>
+    product['Product Name']?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product['Definition (Simple)']?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+  };
+
+  const getCustomerProfiles = (profilesText: string) => {
+    if (!profilesText) return [];
+    return profilesText.split(',').map(profile => profile.trim()).filter(Boolean);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-subtle">
+      {/* Header */}
+      <header className="bg-card border-b shadow-card">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-brand rounded-lg">
+              <FileSpreadsheet className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Sales Training Viewer</h1>
+              <p className="text-muted-foreground">Product information and sales resources</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-6 py-6">
+        {/* File Upload Section */}
+        {uploadStatus === 'idle' && (
+          <Card className="mb-6 shadow-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Upload className="h-5 w-5" />
+                Upload Product Data
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-4">
+                <p className="text-muted-foreground">
+                  Upload an Excel (.xlsx) or CSV file containing your product information to get started.
+                </p>
+                <Input
+                  type="file"
+                  accept=".xlsx,.csv"
+                  onChange={handleFileUpload}
+                  className="file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-primary file:text-primary-foreground hover:file:bg-primary-hover"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Upload Success Message */}
+        {uploadStatus === 'uploaded' && products.length > 0 && (
+          <Card className="mb-6 border-success/20 bg-success/5 shadow-card">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2 text-success">
+                <CheckCircle className="h-5 w-5" />
+                <span className="font-medium">
+                  Successfully loaded {products.length} products
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Main Content */}
+        {products.length > 0 && (
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <TabsList className="grid w-full grid-cols-4 bg-card shadow-card">
+              <TabsTrigger value="products">Products</TabsTrigger>
+              <TabsTrigger value="scripts">Call Scripts</TabsTrigger>
+              <TabsTrigger value="emails">Email Sequences</TabsTrigger>
+              <TabsTrigger value="profiles">Profiles & Positioning</TabsTrigger>
+            </TabsList>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Left Sidebar - Product List */}
+              <div className="lg:col-span-1">
+                <Card className="shadow-card">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center gap-2">
+                      <Search className="h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search products..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="border-0 focus-visible:ring-0 px-0"
+                      />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                      {filteredProducts.map((product, index) => (
+                        <div
+                          key={index}
+                          className={`p-3 rounded-lg cursor-pointer transition-smooth border ${
+                            selectedProduct?.['Product Name'] === product['Product Name']
+                              ? 'bg-accent border-primary'
+                              : 'hover:bg-muted border-transparent'
+                          }`}
+                          onClick={() => setSelectedProduct(product)}
+                        >
+                          <h4 className="font-medium text-sm mb-1">{product['Product Name']}</h4>
+                          <p className="text-xs text-muted-foreground line-clamp-2">
+                            {product['Definition (Simple)']}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Right Content - Product Details */}
+              <div className="lg:col-span-2">
+                {selectedProduct ? (
+                  <>
+                    <TabsContent value="products" className="mt-0">
+                      <Card className="shadow-card">
+                        <CardHeader>
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <CardTitle className="text-xl mb-2">{selectedProduct['Product Name']}</CardTitle>
+                              <p className="text-muted-foreground">{selectedProduct['Definition (Simple)']}</p>
+                            </div>
+                            {selectedProduct['Product URL'] && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => window.open(selectedProduct['Product URL'], '_blank')}
+                                className="flex items-center gap-2"
+                              >
+                                <ExternalLink className="h-4 w-4" />
+                                Check Product
+                              </Button>
+                            )}
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                          <div>
+                            <h3 className="font-semibold mb-3">Expanded Explanation</h3>
+                            <p className="text-muted-foreground leading-relaxed">
+                              {selectedProduct['Expanded Explanation'] || 'No detailed explanation available.'}
+                            </p>
+                          </div>
+                          <div>
+                            <h3 className="font-semibold mb-3">Common Uses</h3>
+                            <p className="text-muted-foreground leading-relaxed">
+                              {selectedProduct['Common Uses'] || 'No common uses listed.'}
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+
+                    <TabsContent value="scripts" className="mt-0">
+                      <div className="space-y-4">
+                        <Card className="shadow-card">
+                          <CardHeader className="flex flex-row items-center justify-between">
+                            <CardTitle>Cold Call Script</CardTitle>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => copyToClipboard(selectedProduct['Cold Call Script'] || '')}
+                            >
+                              <Copy className="h-4 w-4 mr-2" />
+                              Copy
+                            </Button>
+                          </CardHeader>
+                          <CardContent>
+                            <pre className="whitespace-pre-wrap text-sm text-muted-foreground">
+                              {selectedProduct['Cold Call Script'] || 'No script available.'}
+                            </pre>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="shadow-card">
+                          <CardHeader className="flex flex-row items-center justify-between">
+                            <CardTitle>Objections & Rebuttals</CardTitle>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => copyToClipboard(
+                                `Objections: ${selectedProduct['Possible Customer Objections'] || ''}\n\nRebuttals: ${selectedProduct['Rebuttals to Objections'] || ''}`
+                              )}
+                            >
+                              <Copy className="h-4 w-4 mr-2" />
+                              Copy
+                            </Button>
+                          </CardHeader>
+                          <CardContent className="space-y-4">
+                            <div>
+                              <h4 className="font-medium mb-2">Possible Objections</h4>
+                              <p className="text-sm text-muted-foreground">
+                                {selectedProduct['Possible Customer Objections'] || 'No objections listed.'}
+                              </p>
+                            </div>
+                            <div>
+                              <h4 className="font-medium mb-2">Rebuttals</h4>
+                              <p className="text-sm text-muted-foreground">
+                                {selectedProduct['Rebuttals to Objections'] || 'No rebuttals available.'}
+                              </p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="emails" className="mt-0">
+                      <Card className="shadow-card">
+                        <CardHeader>
+                          <CardTitle>Email Sequences</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <Accordion type="single" collapsible className="w-full">
+                            {[1, 2, 3, 4, 5].map((num) => {
+                              const emailKey = `Cold Email - Sequence ${num}` as keyof ProductData;
+                              const emailContent = selectedProduct[emailKey];
+                              
+                              return (
+                                <AccordionItem key={num} value={`sequence-${num}`}>
+                                  <AccordionTrigger className="text-left">
+                                    <div className="flex items-center gap-2">
+                                      <span>Email Sequence {num}</span>
+                                      {emailContent && (
+                                        <Badge variant="secondary" className="ml-auto">
+                                          Available
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </AccordionTrigger>
+                                  <AccordionContent>
+                                    <div className="flex items-start justify-between gap-4">
+                                      <pre className="whitespace-pre-wrap text-sm text-muted-foreground flex-1">
+                                        {emailContent || 'No email sequence available.'}
+                                      </pre>
+                                      {emailContent && (
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => copyToClipboard(emailContent)}
+                                        >
+                                          <Copy className="h-4 w-4" />
+                                        </Button>
+                                      )}
+                                    </div>
+                                  </AccordionContent>
+                                </AccordionItem>
+                              );
+                            })}
+                          </Accordion>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+
+                    <TabsContent value="profiles" className="mt-0">
+                      <div className="space-y-4">
+                        <Card className="shadow-card">
+                          <CardHeader>
+                            <CardTitle>Customer Profiles</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="flex flex-wrap gap-2">
+                              {getCustomerProfiles(selectedProduct['Common Customer Profiles'] || '').map((profile, index) => (
+                                <Badge key={index} variant="secondary">
+                                  {profile}
+                                </Badge>
+                              ))}
+                              {getCustomerProfiles(selectedProduct['Common Customer Profiles'] || '').length === 0 && (
+                                <p className="text-muted-foreground">No customer profiles available.</p>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="shadow-card">
+                          <CardHeader>
+                            <CardTitle>Common Uses</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <p className="text-muted-foreground">
+                              {selectedProduct['Common Uses'] || 'No common uses listed.'}
+                            </p>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="shadow-card">
+                          <CardHeader>
+                            <CardTitle>Positioning vs Competitors</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <p className="text-muted-foreground">
+                              {selectedProduct['Positioning (vs Competitors)'] || 'No positioning information available.'}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </TabsContent>
+                  </>
+                ) : (
+                  <Card className="shadow-card">
+                    <CardContent className="py-12 text-center">
+                      <p className="text-muted-foreground">Select a product to view details</p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            </div>
+          </Tabs>
+        )}
+      </div>
+    </div>
+  );
+}
