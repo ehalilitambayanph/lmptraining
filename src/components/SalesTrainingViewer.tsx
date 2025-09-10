@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Search, Upload, Copy, ExternalLink, FileSpreadsheet, CheckCircle } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
-import DepartmentToggle from '@/components/DepartmentToggle';
 import * as XLSX from 'xlsx';
 
 interface ProductData {
@@ -29,92 +28,39 @@ interface ProductData {
 }
 
 export default function SalesTrainingViewer() {
-  const [department, setDepartment] = useState<'LMP' | 'BMP'>('LMP');
-  const [lmpProducts, setLmpProducts] = useState<ProductData[]>([]);
-  const [bmpProducts, setBmpProducts] = useState<ProductData[]>([]);
+  const [products, setProducts] = useState<ProductData[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('products');
-  const [lmpUploadStatus, setLmpUploadStatus] = useState<'idle' | 'uploaded' | 'error'>('idle');
-  const [bmpUploadStatus, setBmpUploadStatus] = useState<'idle' | 'uploaded' | 'error'>('idle');
-
-  // Helper functions to get current department data
-  const getCurrentProducts = () => department === 'LMP' ? lmpProducts : bmpProducts;
-  const getCurrentUploadStatus = () => department === 'LMP' ? lmpUploadStatus : bmpUploadStatus;
-  const setCurrentProducts = (products: ProductData[]) => {
-    if (department === 'LMP') {
-      setLmpProducts(products);
-    } else {
-      setBmpProducts(products);
-    }
-  };
-  const setCurrentUploadStatus = (status: 'idle' | 'uploaded' | 'error') => {
-    if (department === 'LMP') {
-      setLmpUploadStatus(status);
-    } else {
-      setBmpUploadStatus(status);
-    }
-  };
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploaded' | 'error'>('idle');
 
   // Load data from localStorage on mount
   useEffect(() => {
-    // Load LMP data
-    const savedLmpProducts = localStorage.getItem('salesTrainingProducts_LMP');
-    const savedLmpSelectedId = localStorage.getItem('selectedProductId_LMP');
+    const savedProducts = localStorage.getItem('salesTrainingProducts');
+    const savedSelectedId = localStorage.getItem('selectedProductId');
     
-    if (savedLmpProducts) {
-      const parsedLmpProducts = JSON.parse(savedLmpProducts);
-      setLmpProducts(parsedLmpProducts);
-      setLmpUploadStatus('uploaded');
-    }
-
-    // Load BMP data
-    const savedBmpProducts = localStorage.getItem('salesTrainingProducts_BMP');
-    const savedBmpSelectedId = localStorage.getItem('selectedProductId_BMP');
-    
-    if (savedBmpProducts) {
-      const parsedBmpProducts = JSON.parse(savedBmpProducts);
-      setBmpProducts(parsedBmpProducts);
-      setBmpUploadStatus('uploaded');
-    }
-
-    // Load saved department
-    const savedDepartment = localStorage.getItem('selectedDepartment') as 'LMP' | 'BMP';
-    if (savedDepartment) {
-      setDepartment(savedDepartment);
+    if (savedProducts) {
+      const parsedProducts = JSON.parse(savedProducts);
+      setProducts(parsedProducts);
+      setUploadStatus('uploaded');
+      
+      if (savedSelectedId && parsedProducts.length > 0) {
+        const product = parsedProducts.find((p: ProductData) => p['Product Name'] === savedSelectedId);
+        if (product) {
+          setSelectedProduct(product);
+        } else {
+          setSelectedProduct(parsedProducts[0]);
+        }
+      }
     }
   }, []);
-
-  // Load selected product when department changes
-  useEffect(() => {
-    const currentProducts = getCurrentProducts();
-    const savedSelectedId = localStorage.getItem(`selectedProductId_${department}`);
-    
-    if (savedSelectedId && currentProducts.length > 0) {
-      const product = currentProducts.find((p: ProductData) => p['Product Name'] === savedSelectedId);
-      if (product) {
-        setSelectedProduct(product);
-      } else {
-        setSelectedProduct(currentProducts[0]);
-      }
-    } else if (currentProducts.length > 0) {
-      setSelectedProduct(currentProducts[0]);
-    } else {
-      setSelectedProduct(null);
-    }
-  }, [department, lmpProducts, bmpProducts]);
 
   // Save selected product to localStorage
   useEffect(() => {
     if (selectedProduct) {
-      localStorage.setItem(`selectedProductId_${department}`, selectedProduct['Product Name']);
+      localStorage.setItem('selectedProductId', selectedProduct['Product Name']);
     }
-  }, [selectedProduct, department]);
-
-  // Save department to localStorage
-  useEffect(() => {
-    localStorage.setItem('selectedDepartment', department);
-  }, [department]);
+  }, [selectedProduct]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -129,22 +75,22 @@ export default function SalesTrainingViewer() {
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet) as ProductData[];
         
-        setCurrentProducts(jsonData);
-        localStorage.setItem(`salesTrainingProducts_${department}`, JSON.stringify(jsonData));
-        setCurrentUploadStatus('uploaded');
+        setProducts(jsonData);
+        localStorage.setItem('salesTrainingProducts', JSON.stringify(jsonData));
+        setUploadStatus('uploaded');
         
         if (jsonData.length > 0) {
           setSelectedProduct(jsonData[0]);
         }
       } catch (error) {
         console.error('Error parsing file:', error);
-        setCurrentUploadStatus('error');
+        setUploadStatus('error');
       }
     };
     reader.readAsArrayBuffer(file);
   };
 
-  const filteredProducts = getCurrentProducts().filter(product =>
+  const filteredProducts = products.filter(product =>
     product['Product Name']?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product['Definition (Simple)']?.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -181,23 +127,19 @@ export default function SalesTrainingViewer() {
       </header>
 
       <div className="container mx-auto px-6 py-6">
-        {/* Department Toggle */}
-        <div className="mb-6">
-          <DepartmentToggle department={department} onDepartmentChange={setDepartment} />
-        </div>
         {/* File Upload Section */}
-        {getCurrentUploadStatus() === 'idle' && (
+        {uploadStatus === 'idle' && (
           <Card className="mb-6 shadow-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Upload className="h-5 w-5" />
-                Upload {department} Product Data
+                Upload Product Data
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col gap-4">
                 <p className="text-muted-foreground">
-                  Upload an Excel (.xlsx) or CSV file containing your {department} product information to get started.
+                  Upload an Excel (.xlsx) or CSV file containing your product information to get started.
                 </p>
                 <Input
                   type="file"
@@ -211,13 +153,13 @@ export default function SalesTrainingViewer() {
         )}
 
         {/* Upload Success Message */}
-        {getCurrentUploadStatus() === 'uploaded' && getCurrentProducts().length > 0 && (
+        {uploadStatus === 'uploaded' && products.length > 0 && (
           <Card className="mb-6 border-success/20 bg-success/5 shadow-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 text-success">
                 <CheckCircle className="h-5 w-5" />
                 <span className="font-medium">
-                  Successfully loaded {getCurrentProducts().length} {department} products
+                  Successfully loaded {products.length} products
                 </span>
               </div>
             </CardContent>
@@ -225,7 +167,7 @@ export default function SalesTrainingViewer() {
         )}
 
         {/* Main Content */}
-        {getCurrentProducts().length > 0 && (
+        {products.length > 0 && (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full grid-cols-4 bg-card shadow-card">
               <TabsTrigger value="products">Products</TabsTrigger>
