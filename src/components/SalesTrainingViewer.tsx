@@ -153,8 +153,8 @@ export default function SalesTrainingViewer() {
       </header>
 
       <div className="container mx-auto px-6 py-6">
-        {/* File Upload Section */}
-        {uploadStatus === 'idle' && (
+        {/* File Upload Section - Only show if no data exists */}
+        {products.length === 0 && (
           <Card className="mb-6 shadow-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
