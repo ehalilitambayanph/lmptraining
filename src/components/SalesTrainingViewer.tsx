@@ -9,6 +9,7 @@ import { Search, Upload, Copy, ExternalLink, FileSpreadsheet, CheckCircle } from
 import ThemeToggle from '@/components/ThemeToggle';
 import * as XLSX from 'xlsx';
 import toast from 'react-hot-toast';
+import LZString from 'lz-string';
 
 interface ProductData {
   'Product URL': string;
@@ -42,6 +43,24 @@ export default function SalesTrainingViewer() {
   // Load data from URL (share) or localStorage on mount
   useEffect(() => {
     try {
+      // Prefer compressed data in URL hash (does not hit the server)
+      const hash = window.location.hash || '';
+      const hashMatch = hash.match(/data=([^&]+)/);
+      if (hashMatch && hashMatch[1]) {
+        const decompressed = LZString.decompressFromEncodedURIComponent(hashMatch[1]);
+        if (decompressed) {
+          const shared = JSON.parse(decompressed);
+          if (Array.isArray(shared)) {
+            setProducts(shared as ProductData[]);
+            localStorage.setItem('salesTrainingProducts', JSON.stringify(shared));
+            setUploadStatus('uploaded');
+            setSelectedProduct(shared[0] || null);
+            return; // Skip localStorage path when shared data is present
+          }
+        }
+      }
+
+      // Legacy fallback: data in query string (could be long)
       const sharedDataParam = urlParams.get('data');
       if (sharedDataParam) {
         const shared = JSON.parse(decodeURIComponent(sharedDataParam));
@@ -55,6 +74,7 @@ export default function SalesTrainingViewer() {
       }
     } catch (e) {
       console.error('Failed to load shared data from link:', e);
+      toast.error('Failed to load shared data. Ask trainer to resend link.');
     }
 
     const savedProducts = localStorage.getItem('salesTrainingProducts');
@@ -121,9 +141,9 @@ export default function SalesTrainingViewer() {
   };
 
   const generateShareLink = () => {
-    const baseUrl = window.location.origin + window.location.pathname;
-    const dataParam = encodeURIComponent(JSON.stringify(products));
-    const shareUrl = `${baseUrl}?mode=trainee&data=${dataParam}`;
+    const baseUrl = window.location.origin + window.location.pathname + '?mode=trainee';
+    const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(products));
+    const shareUrl = `${baseUrl}#data=${compressed}`;
     copyToClipboard(shareUrl);
     toast.success('View-only link copied to clipboard!');
   };
