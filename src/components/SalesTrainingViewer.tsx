@@ -228,10 +228,10 @@ export default function SalesTrainingViewer() {
                             </div>
                             {selectedProduct['Product URL'] && (
                               <Button
-                                variant="outline"
+                                variant="default"
                                 size="sm"
                                 onClick={() => window.open(selectedProduct['Product URL'], '_blank')}
-                                className="flex items-center gap-2"
+                                className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary-hover hover:from-primary-hover hover:to-primary transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-primary/25"
                               >
                                 <ExternalLink className="h-4 w-4" />
                                 Check Product
