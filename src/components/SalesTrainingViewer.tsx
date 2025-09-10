@@ -196,10 +196,10 @@ export default function SalesTrainingViewer() {
                       {filteredProducts.map((product, index) => (
                         <div
                           key={index}
-                          className={`p-3 rounded-lg cursor-pointer transition-smooth border ${
+                          className={`p-3 rounded-lg cursor-pointer transition-all duration-300 border ${
                             selectedProduct?.['Product Name'] === product['Product Name']
-                              ? 'bg-accent border-primary'
-                              : 'hover:bg-muted border-transparent'
+                              ? 'bg-gradient-to-r from-primary/10 to-primary-hover/10 border-primary shadow-lg shadow-primary/20 scale-[1.02]'
+                              : 'hover:bg-accent hover:border-accent-foreground/20 hover:scale-105 hover:shadow-md border-transparent'
                           }`}
                           onClick={() => setSelectedProduct(product)}
                         >
