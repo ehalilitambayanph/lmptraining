@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Search, Upload, Copy, ExternalLink, FileSpreadsheet, CheckCircle } from 'lucide-react';
+import ThemeToggle from '@/components/ThemeToggle';
 import * as XLSX from 'xlsx';
 
 interface ProductData {
@@ -108,14 +109,19 @@ export default function SalesTrainingViewer() {
       {/* Header */}
       <header className="bg-card border-b shadow-card">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-brand rounded-lg">
-              <FileSpreadsheet className="h-6 w-6 text-white" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img 
+                src="/lovable-uploads/a861675f-582f-4b42-80ff-16343ef6836f.png" 
+                alt="Company Logo" 
+                className="h-10 w-10 object-contain"
+              />
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">Sales Training Viewer</h1>
+                <p className="text-muted-foreground">Product information and sales resources</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Sales Training Viewer</h1>
-              <p className="text-muted-foreground">Product information and sales resources</p>
-            </div>
+            <ThemeToggle />
           </div>
         </div>
       </header>
