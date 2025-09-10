@@ -136,7 +136,7 @@ export default function SalesTrainingViewer() {
                   onClick={() => window.location.href = '/'}
                   className="text-sm"
                 >
-                  Sales Training
+                  Product Training
                 </Button>
                 <Button
                   variant="ghost"
