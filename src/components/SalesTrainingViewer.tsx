@@ -39,8 +39,24 @@ export default function SalesTrainingViewer() {
   const urlParams = new URLSearchParams(window.location.search);
   const isViewOnly = urlParams.get('mode') === 'trainee';
 
-  // Load data from localStorage on mount
+  // Load data from URL (share) or localStorage on mount
   useEffect(() => {
+    try {
+      const sharedDataParam = urlParams.get('data');
+      if (sharedDataParam) {
+        const shared = JSON.parse(decodeURIComponent(sharedDataParam));
+        if (Array.isArray(shared)) {
+          setProducts(shared as ProductData[]);
+          localStorage.setItem('salesTrainingProducts', JSON.stringify(shared));
+          setUploadStatus('uploaded');
+          setSelectedProduct(shared[0] || null);
+          return; // Skip localStorage path when shared data is present
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load shared data from link:', e);
+    }
+
     const savedProducts = localStorage.getItem('salesTrainingProducts');
     const savedSelectedId = localStorage.getItem('selectedProductId');
     
@@ -106,7 +122,8 @@ export default function SalesTrainingViewer() {
 
   const generateShareLink = () => {
     const baseUrl = window.location.origin + window.location.pathname;
-    const shareUrl = `${baseUrl}?mode=trainee`;
+    const dataParam = encodeURIComponent(JSON.stringify(products));
+    const shareUrl = `${baseUrl}?mode=trainee&data=${dataParam}`;
     copyToClipboard(shareUrl);
     toast.success('View-only link copied to clipboard!');
   };
@@ -192,12 +209,12 @@ export default function SalesTrainingViewer() {
 
         {/* Share Link Section - Only show for trainers when data is uploaded */}
         {!isViewOnly && products.length > 0 && (
-          <Card className="mb-6 border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/30 shadow-card">
+          <Card className="mb-6 border-primary/20 bg-primary/5 dark:border-primary/30 dark:bg-primary/10 shadow-card">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <ExternalLink className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                  <span className="font-medium text-blue-900 dark:text-blue-100">
+                  <ExternalLink className="h-5 w-5 text-primary" />
+                  <span className="font-medium text-primary">
                     Share with trainees
                   </span>
                 </div>
@@ -205,13 +222,13 @@ export default function SalesTrainingViewer() {
                   variant="outline"
                   size="sm"
                   onClick={generateShareLink}
-                  className="border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-900/30"
+                  className="border-primary/40 text-primary hover:bg-primary/10"
                 >
                   <Copy className="h-4 w-4 mr-2" />
                   Copy View-Only Link
                 </Button>
               </div>
-              <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">
+              <p className="text-sm text-muted-foreground mt-2">
                 Share this link with trainees so they can view the product data without upload access.
               </p>
             </CardContent>
