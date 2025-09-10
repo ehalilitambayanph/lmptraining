@@ -198,8 +198,8 @@ export default function SalesTrainingViewer() {
                           key={index}
                           className={`p-3 rounded-lg cursor-pointer transition-all duration-300 border ${
                             selectedProduct?.['Product Name'] === product['Product Name']
-                              ? 'bg-gradient-to-r from-primary/10 to-primary-hover/10 border-primary shadow-lg shadow-primary/20 scale-[1.02]'
-                              : 'hover:bg-accent hover:border-accent-foreground/20 hover:scale-105 hover:shadow-md border-transparent'
+                              ? 'bg-gradient-to-r from-success/10 to-success/15 border-success shadow-lg shadow-success/20 scale-[1.02]'
+                              : 'hover:bg-success/5 hover:border-success/30 hover:scale-105 hover:shadow-md border-transparent'
                           }`}
                           onClick={() => setSelectedProduct(product)}
                         >
