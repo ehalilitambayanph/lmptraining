@@ -121,7 +121,25 @@ export default function SalesTrainingViewer() {
                 <p className="text-muted-foreground">Product information and sales resources</p>
               </div>
             </div>
-            <ThemeToggle />
+            <div className="flex items-center gap-4">
+              <nav className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  onClick={() => window.location.href = '/'}
+                  className="text-sm"
+                >
+                  Sales Training
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => window.location.href = '/training-activity'}
+                  className="text-sm"
+                >
+                  Training Activity
+                </Button>
+              </nav>
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </header>
