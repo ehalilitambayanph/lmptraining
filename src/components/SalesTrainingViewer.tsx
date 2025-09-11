@@ -537,22 +537,28 @@ export default function SalesTrainingViewer() {
                             LMP Sales Bot
                           </CardTitle>
                         </CardHeader>
-                        <CardContent className="py-12 text-center">
-                          <p className="text-muted-foreground mb-6">
+                        <CardContent className="py-12 text-center space-y-4">
+                          <p className="text-muted-foreground mb-4">
                             Get instant sales assistance from our AI chatbot
                           </p>
-                          <Button
-                            variant="default"
-                            size="lg"
-                            onClick={() => {
-                              const chatbotUrl = 'https://chatgpt.com/g/g-68aee7938a248191b828af46f71b5f83-lmp-sales-bot';
-                              window.open(chatbotUrl, '_blank', 'noopener,noreferrer');
-                            }}
-                            className="bg-gradient-to-r from-primary to-primary-hover hover:from-primary-hover hover:to-primary transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-primary/25"
-                          >
-                            <ExternalLink className="h-4 w-4 mr-2" />
-                            Open Sales Bot
-                          </Button>
+                          <div className="bg-muted/50 p-4 rounded-lg border">
+                            <p className="text-sm font-medium mb-2">Chatbot Link:</p>
+                            <code className="text-sm bg-background p-2 rounded border block mb-3 break-all">
+                              https://chatgpt.com/g/g-68aee7938a248191b828af46f71b5f83-lmp-sales-bot
+                            </code>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => copyToClipboard('https://chatgpt.com/g/g-68aee7938a248191b828af46f71b5f83-lmp-sales-bot')}
+                              className="mb-2"
+                            >
+                              <Copy className="h-4 w-4 mr-2" />
+                              Copy Link
+                            </Button>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            <strong>Instructions:</strong> Copy the link above and paste it into a new browser tab to access the sales bot.
+                          </p>
                         </CardContent>
                       </Card>
                     </TabsContent>
