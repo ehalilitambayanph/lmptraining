@@ -507,24 +507,30 @@ export default function SalesTrainingViewer() {
                     <TabsContent value="cabin" className="mt-0">
                       <Card className="shadow-card">
                         <CardHeader>
-                          <CardTitle className="flex items-center gap-2">
-                            <ExternalLink className="h-5 w-5" />
-                            BMP Cabin Files
-                          </CardTitle>
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="flex items-center gap-2">
+                              <ExternalLink className="h-5 w-5" />
+                              BMP Cabin Files
+                            </CardTitle>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => window.open('https://www.notion.so/BMP-Cabin-Files-254d5611bd3d8002b54af6d695a10282?source=copy_link', '_blank')}
+                            >
+                              <ExternalLink className="h-4 w-4 mr-2" />
+                              Open in New Tab
+                            </Button>
+                          </div>
                         </CardHeader>
-                        <CardContent className="py-12 text-center">
-                          <p className="text-muted-foreground mb-6">
-                            Access cabin files and documentation on Notion
-                          </p>
-                          <Button
-                            variant="default"
-                            size="lg"
-                            onClick={() => window.open('https://www.notion.so/BMP-Cabin-Files-254d5611bd3d8002b54af6d695a10282?source=copy_link', '_blank')}
-                            className="bg-gradient-to-r from-primary to-primary-hover hover:from-primary-hover hover:to-primary transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-primary/25"
-                          >
-                            <ExternalLink className="h-4 w-4 mr-2" />
-                            Open Cabin Files
-                          </Button>
+                        <CardContent className="p-0">
+                          <div className="w-full h-[600px] border rounded-lg overflow-hidden">
+                            <iframe
+                              src="https://www.notion.so/BMP-Cabin-Files-254d5611bd3d8002b54af6d695a10282"
+                              className="w-full h-full border-0"
+                              title="BMP Cabin Files"
+                              sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                            />
+                          </div>
                         </CardContent>
                       </Card>
                     </TabsContent>
