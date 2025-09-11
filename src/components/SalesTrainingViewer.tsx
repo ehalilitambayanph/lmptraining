@@ -271,11 +271,13 @@ export default function SalesTrainingViewer() {
         {/* Main Content */}
         {products.length > 0 && (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 bg-card shadow-card">
+            <TabsList className="grid w-full grid-cols-6 bg-card shadow-card">
               <TabsTrigger value="products">Products</TabsTrigger>
               <TabsTrigger value="scripts">Call Scripts</TabsTrigger>
               <TabsTrigger value="emails">Email Sequences</TabsTrigger>
               <TabsTrigger value="profiles">Profiles & Positioning</TabsTrigger>
+              <TabsTrigger value="cabin">Cabin</TabsTrigger>
+              <TabsTrigger value="chatbot">Chatbot</TabsTrigger>
             </TabsList>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -500,6 +502,56 @@ export default function SalesTrainingViewer() {
                           </CardContent>
                         </Card>
                       </div>
+                    </TabsContent>
+
+                    <TabsContent value="cabin" className="mt-0">
+                      <Card className="shadow-card">
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <ExternalLink className="h-5 w-5" />
+                            BMP Cabin Files
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="py-12 text-center">
+                          <p className="text-muted-foreground mb-6">
+                            Access cabin files and documentation on Notion
+                          </p>
+                          <Button
+                            variant="default"
+                            size="lg"
+                            onClick={() => window.open('https://www.notion.so/BMP-Cabin-Files-254d5611bd3d8002b54af6d695a10282?source=copy_link', '_blank')}
+                            className="bg-gradient-to-r from-primary to-primary-hover hover:from-primary-hover hover:to-primary transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-primary/25"
+                          >
+                            <ExternalLink className="h-4 w-4 mr-2" />
+                            Open Cabin Files
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+
+                    <TabsContent value="chatbot" className="mt-0">
+                      <Card className="shadow-card">
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <ExternalLink className="h-5 w-5" />
+                            LMP Sales Bot
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="py-12 text-center">
+                          <p className="text-muted-foreground mb-6">
+                            Get instant sales assistance from our AI chatbot
+                          </p>
+                          <Button
+                            variant="default"
+                            size="lg"
+                            onClick={() => window.open('https://chatgpt.com/g/g-68aee7938a248191b828af46f71b5f83-lmp-sales-bot', '_blank')}
+                            className="bg-gradient-to-r from-primary to-primary-hover hover:from-primary-hover hover:to-primary transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-primary/25"
+                          >
+                            <ExternalLink className="h-4 w-4 mr-2" />
+                            Open Sales Bot
+                          </Button>
+                        </CardContent>
+                      </Card>
                     </TabsContent>
                   </>
                 ) : (
