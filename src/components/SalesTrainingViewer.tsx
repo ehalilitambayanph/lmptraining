@@ -544,7 +544,10 @@ export default function SalesTrainingViewer() {
                           <Button
                             variant="default"
                             size="lg"
-                            onClick={() => window.open('https://chatgpt.com/g/g-68aee7938a248191b828af46f71b5f83-lmp-sales-bot', '_blank')}
+                            onClick={() => {
+                              const chatbotUrl = 'https://chatgpt.com/g/g-68aee7938a248191b828af46f71b5f83-lmp-sales-bot';
+                              window.open(chatbotUrl, '_blank', 'noopener,noreferrer');
+                            }}
                             className="bg-gradient-to-r from-primary to-primary-hover hover:from-primary-hover hover:to-primary transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-primary/25"
                           >
                             <ExternalLink className="h-4 w-4 mr-2" />
