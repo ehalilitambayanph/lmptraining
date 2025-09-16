@@ -126,7 +126,7 @@ export default function TaxUpdate() {
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-primary font-medium">•</span>
-                  <span>For questions, reach out to <strong>@Ayan Alam</strong></span>
+                  <span>For questions, reach out to <a href="mailto:ayan@wenlighting.com" className="font-medium text-primary hover:underline select-all">ayan@wenlighting.com</a></span>
                 </div>
               </div>
             </div>
