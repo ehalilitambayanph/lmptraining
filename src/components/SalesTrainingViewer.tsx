@@ -271,13 +271,14 @@ export default function SalesTrainingViewer() {
         {/* Main Content */}
         {products.length > 0 && (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-6 bg-card shadow-card">
+            <TabsList className="grid w-full grid-cols-7 bg-card shadow-card">
               <TabsTrigger value="products">Products</TabsTrigger>
               <TabsTrigger value="scripts">Call Scripts</TabsTrigger>
               <TabsTrigger value="emails">Email Sequences</TabsTrigger>
               <TabsTrigger value="profiles">Profiles & Positioning</TabsTrigger>
               <TabsTrigger value="cabin">Cabin</TabsTrigger>
               <TabsTrigger value="chatbot">Chatbot</TabsTrigger>
+              <TabsTrigger value="tax-update">Tax Update</TabsTrigger>
             </TabsList>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -561,7 +562,67 @@ export default function SalesTrainingViewer() {
                           </p>
                         </CardContent>
                       </Card>
-                    </TabsContent>
+                     </TabsContent>
+
+                     <TabsContent value="tax-update" className="mt-0">
+                       <Card className="shadow-card">
+                         <CardHeader>
+                           <CardTitle className="text-xl mb-2">Tax Update: Ledmyplace States</CardTitle>
+                           <p className="text-muted-foreground">States where we collect taxes</p>
+                         </CardHeader>
+                         <CardContent className="space-y-6">
+                           <div>
+                             <h3 className="font-semibold mb-4">Current Tax Collection States</h3>
+                             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+                               {[
+                                 'Pennsylvania', 'New Jersey', 'Kentucky', 'Florida', 'Illinois', 'Maryland',
+                                 'North Carolina', 'Ohio', 'Texas', 'Michigan', 'Louisiana', 'Iowa',
+                                 'Washington', 'Minnesota', 'Georgia', 'Indiana', 'Tennessee', 'Wisconsin', 'Virginia'
+                               ].map((state) => (
+                                 <Badge key={state} variant="outline" className="justify-center p-2">
+                                   {state}
+                                 </Badge>
+                               ))}
+                             </div>
+                             
+                             <h3 className="font-semibold mb-3 text-amber-600 dark:text-amber-400">Coming Soon</h3>
+                             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+                               {['Arkansas', 'Missouri'].map((state) => (
+                                 <Badge key={state} variant="secondary" className="justify-center p-2 bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
+                                   {state}
+                                 </Badge>
+                               ))}
+                             </div>
+                           </div>
+                           
+                           <div className="space-y-4 bg-muted/30 p-4 rounded-lg">
+                             <h3 className="font-semibold text-primary">Important Tax Information</h3>
+                             <div className="space-y-3 text-sm">
+                               <div className="flex items-start gap-2">
+                                 <span className="text-primary font-medium">•</span>
+                                 <span>Taxes are collected based on the <strong>shipping address</strong></span>
+                               </div>
+                               <div className="flex items-start gap-2">
+                                 <span className="text-primary font-medium">•</span>
+                                 <span>Shopify collects taxes on <strong>shipping fees</strong> as well</span>
+                               </div>
+                               <div className="flex items-start gap-2">
+                                 <span className="text-primary font-medium">•</span>
+                                 <span>We accept a <strong>resale certificate</strong> to mark a customer tax-exempt</span>
+                               </div>
+                               <div className="flex items-start gap-2">
+                                 <span className="text-primary font-medium">•</span>
+                                 <span>Resale certificates must be <strong>approved by our accountant</strong></span>
+                               </div>
+                               <div className="flex items-start gap-2">
+                                 <span className="text-primary font-medium">•</span>
+                                 <span>For questions, reach out to <strong>@Ayan Alam</strong></span>
+                               </div>
+                             </div>
+                           </div>
+                         </CardContent>
+                       </Card>
+                     </TabsContent>
                   </>
                 ) : (
                   <Card className="shadow-card">
