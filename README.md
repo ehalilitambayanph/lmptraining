@@ -36,6 +36,19 @@ npm i
 npm run dev
 ```
 
+## How do I preview the Appointmentlyy scheduling tool?
+
+Follow these steps to explore the end-to-end experience that ships with the Appointmentlyy workspace:
+
+1. Install dependencies (if you haven't already): `npm install`.
+2. Start the local development server: `npm run dev`.
+3. Open the Vite preview URL printed in the terminal (by default [http://localhost:5173](http://localhost:5173)).
+4. Configure your scheduling rules, conferencing provider, questionnaires, automations, and API integrations in the "Schedule configuration" and subsequent sections.
+5. Use the "Landing page preview" card on the right-hand side to see how the booking experience updates in real time as you make changes.
+6. Click **Publish schedule** in the hero section to freeze a snapshot of your current settings and generate an updated booking link in the "Booking link preview" field that you can copy or share for user testing.
+
+The local preview mirrors what customers will experience once you deploy the workspace, so any adjustments you make here will be reflected in production when you publish.
+
 **Edit a file directly in GitHub**
 
 - Navigate to the desired file(s).
