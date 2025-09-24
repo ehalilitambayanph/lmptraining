@@ -37,8 +37,8 @@ export default function SalesTrainingViewer() {
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploaded' | 'error'>('idle');
   
   // Check if in view-only mode (for trainees)
-  const urlParams = new URLSearchParams(window.location.search);
-  const isViewOnly = urlParams.get('mode') === 'trainee';
+  const isViewOnly =
+    typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('mode') === 'trainee';
 
   // Load data from URL (share) or localStorage on mount
   useEffect(() => {
@@ -61,7 +61,8 @@ export default function SalesTrainingViewer() {
       }
 
       // Legacy fallback: data in query string (could be long)
-      const sharedDataParam = urlParams.get('data');
+      const params = new URLSearchParams(window.location.search);
+      const sharedDataParam = params.get('data');
       if (sharedDataParam) {
         const shared = JSON.parse(decodeURIComponent(sharedDataParam));
         if (Array.isArray(shared)) {

@@ -1,7 +1,7 @@
-import SalesTrainingViewer from '@/components/SalesTrainingViewer';
+import AppointmentlyyBuilder from "@/components/AppointmentlyyBuilder";
 
 const Index = () => {
-  return <SalesTrainingViewer />;
+  return <AppointmentlyyBuilder />;
 };
 
 export default Index;
